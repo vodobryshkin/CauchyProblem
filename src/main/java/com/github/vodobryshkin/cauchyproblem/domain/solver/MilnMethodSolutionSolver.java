@@ -1,23 +1,20 @@
-package com.github.vodobryshkin.cauchyproblem.service.impl;
+package com.github.vodobryshkin.cauchyproblem.domain.solver;
 
-import com.github.vodobryshkin.cauchyproblem.domain.FunctionOfTwoVariables;
+import com.github.vodobryshkin.cauchyproblem.domain.method.FunctionOfTwoVariables;
 import com.github.vodobryshkin.cauchyproblem.domain.accuracy.ExactSolutionOrderOfAccuracy;
 import com.github.vodobryshkin.cauchyproblem.domain.accuracy.OrderOfAccuracy;
 import com.github.vodobryshkin.cauchyproblem.domain.method.Method;
 import com.github.vodobryshkin.cauchyproblem.domain.method.MilnMethod;
 import com.github.vodobryshkin.cauchyproblem.dto.Solution;
 import com.github.vodobryshkin.cauchyproblem.dto.Table;
-import com.github.vodobryshkin.cauchyproblem.service.spec.ODESolutionService;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class MilnMethodSolutionService implements ODESolutionService {
+public class MilnMethodSolutionSolver implements ODESolutionSolver {
     private final OrderOfAccuracy orderOfAccuracy = new ExactSolutionOrderOfAccuracy();
     private final List<Double> exactSolution;
 
-    public MilnMethodSolutionService(List<Double> exactSolution) {
+    public MilnMethodSolutionSolver(List<Double> exactSolution) {
         this.exactSolution = exactSolution;
     }
 

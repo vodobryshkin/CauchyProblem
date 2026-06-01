@@ -1,6 +1,5 @@
 package com.github.vodobryshkin.cauchyproblem.domain.method;
 
-import com.github.vodobryshkin.cauchyproblem.domain.FunctionOfTwoVariables;
 import com.github.vodobryshkin.cauchyproblem.dto.Table;
 
 import java.util.ArrayList;
