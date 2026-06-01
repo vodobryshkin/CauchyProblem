@@ -18,28 +18,16 @@ public class EulerMethodSolutionService implements ODESolutionService {
 
     @Override
     public Solution solution(FunctionOfTwoVariables f, double y0, double x0, double xn, double h, double epsilon) {
-        Table solutionWithH;
-        Table solutionWithHalfH;
-        double currentOrder;
+        Method method = new EulerMethod(f);
 
-        double resultH;
+        Table solutionWithH = method.table(y0, x0, xn, h);
+        Table solutionWithHalfH = method.table(y0, x0, xn, h / 2);
 
-        do {
-            Method method = new EulerMethod(f);
+        List<Double> yHList = solutionWithH.getYRow();
+        List<Double> yHalfHList = solutionWithHalfH.getYRow();
 
-            solutionWithH = method.table(y0, x0, xn, h);
-            solutionWithHalfH = method.table(y0, x0, xn, h / 2);
+        double currentOrder = orderOfAccuracy.value(yHList, yHalfHList);
 
-            resultH = h / 2;
-
-            List<Double> yHList = solutionWithH.getYRow();
-            List<Double> yHalfHList = solutionWithHalfH.getYRow();
-
-            currentOrder = orderOfAccuracy.value(yHList, yHalfHList);
-
-        } while (currentOrder <= epsilon);
-
-
-        return new Solution(solutionWithHalfH, resultH);
+        return new Solution(solutionWithHalfH, currentOrder <= epsilon);
     }
 }

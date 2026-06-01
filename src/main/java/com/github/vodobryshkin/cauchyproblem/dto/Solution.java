@@ -5,5 +5,5 @@ import lombok.Value;
 @Value
 public class Solution {
     Table table;
-    double coefficient;
+    boolean accuracyReached;
 }
