@@ -18,7 +18,7 @@ public class MilnMethod implements Method {
     public Table table(double y0, double x0, double xn, double h) {
         List<Double> xRow = new ArrayList<>();
 
-        for (double x = x0; x <= xn; x += h) {
+        for (double x = x0; x <= xn + h / 2; x += h) {
             xRow.add(x);
         }
 
@@ -26,26 +26,26 @@ public class MilnMethod implements Method {
             throw new IllegalArgumentException("Введённые границы интервала не соотносятся с введённым h.");
         }
 
-        if (xRow.size() < 4)  {
-            throw new IllegalArgumentException("Метод Милна можно использовать минимум для трёх узлов.");
+        if (xRow.size() < 5) {
+            throw new IllegalArgumentException("Метод Милна можно использовать минимум для пяти узлов.");
         }
 
-        List<Double> yRow = prePredictMethod.table(y0, x0, xRow.get(2), h).getYRow();
+        List<Double> yRow = prePredictMethod.table(y0, x0, xRow.get(3), h).getYRow();
 
         for (int i = 3; i < xRow.size() - 1; i++) {
-            double xi = xRow.get(i);
+            double xNext = xRow.get(i + 1);
 
             double yPrev3 = yRow.get(i - 3);
+            double yPrev1 = yRow.get(i - 1);
+
             double fPrev2 = f.value(xRow.get(i - 2), yRow.get(i - 2));
             double fPrev1 = f.value(xRow.get(i - 1), yRow.get(i - 1));
             double fIn = f.value(xRow.get(i), yRow.get(i));
 
-            double predictY = yPrev3 + 4*h/3 * (2*fPrev2 - fPrev1 + 2*fIn);
-            double predictDerivative = f.value(xi, predictY);
+            double predictY = yPrev3 + 4 * h / 3 * (2 * fPrev2 - fPrev1 + 2 * fIn);
+            double predictDerivative = f.value(xNext, predictY);
 
-            double yPrev1 = yRow.get(i - 1);
-
-            yRow.add(yPrev1 + h/3 * (fPrev1 + 4*fIn + predictDerivative));
+            yRow.add(yPrev1 + h / 3 * (fPrev1 + 4 * fIn + predictDerivative));
         }
 
         return new Table(xRow, yRow);
