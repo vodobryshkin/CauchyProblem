@@ -25,6 +25,6 @@ public class RungeKuttaOfTheFourthOrderSolutionSolver implements ODESolutionSolv
 
         double currentOrder = orderOfAccuracy.value(yHList, yHalfHList);
 
-        return new Solution(solutionWithH, currentOrder <= epsilon);
+        return new Solution("runge", f.toString(), y0, x0, xn, h, epsilon, solutionWithH, currentOrder, currentOrder <= epsilon);
     }
 }

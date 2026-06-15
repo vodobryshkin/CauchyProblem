@@ -26,6 +26,6 @@ public class MilnMethodSolutionSolver implements ODESolutionSolver {
 
         double currentOrder = orderOfAccuracy.value(solution.getYRow(), exactSolution);
 
-        return new Solution(solution, currentOrder <= epsilon);
+        return new Solution("miln", f.toString(), y0, x0, xn, h, epsilon, solution, currentOrder, currentOrder <= epsilon);
     }
 }

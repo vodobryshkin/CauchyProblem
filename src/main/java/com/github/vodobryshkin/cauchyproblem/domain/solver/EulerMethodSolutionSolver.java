@@ -25,6 +25,6 @@ public class EulerMethodSolutionSolver implements ODESolutionSolver {
 
         double currentOrder = orderOfAccuracy.value(yHList, yHalfHList);
 
-        return new Solution(solutionWithH, currentOrder <= epsilon);
+        return new Solution("euler", f.toString(), y0, x0, xn, h, epsilon, solutionWithH, currentOrder, currentOrder <= epsilon);
     }
 }
