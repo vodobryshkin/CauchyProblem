@@ -17,7 +17,7 @@ public class RungeKuttaOfTheFourthOrder implements Method {
         List<Double> xRow = new ArrayList<>();
         List<Double> yRow = new ArrayList<>();
 
-        for (double x = x0; x <= xn; x += h) {
+        for (double x = x0; x <= xn + h/2; x += h) {
             xRow.add(x);
         }
 
@@ -36,7 +36,7 @@ public class RungeKuttaOfTheFourthOrder implements Method {
             double k3 = h * f.value(xi + h/2, yi + k2/2);
             double k4 = h * f.value(xi + h, yi + k3);
 
-            yRow.add(yi + 1/6 * (k1 + 2*k2 + 2*k3 + k4));
+            yRow.add(yi + 1.0/6.0 * (k1 + 2*k2 + 2*k3 + k4));
         }
 
         return new Table(xRow, yRow);
