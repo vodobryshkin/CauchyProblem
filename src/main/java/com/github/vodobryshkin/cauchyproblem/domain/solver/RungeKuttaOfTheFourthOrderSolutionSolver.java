@@ -13,10 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RungeKuttaOfTheFourthOrderSolutionSolver implements ODESolutionSolver {
-    private static final int MAX_ITER = 30;
-
     private final OrderOfAccuracy orderOfAccuracy = new RungeOrderOfAccuracy(4);
-
     private final ExactSolutionFunction exactSolutionFunction;
 
     public RungeKuttaOfTheFourthOrderSolutionSolver(ExactSolutionFunction exactSolutionFunction) {
@@ -27,32 +24,22 @@ public class RungeKuttaOfTheFourthOrderSolutionSolver implements ODESolutionSolv
     public Solution solution(FunctionOfTwoVariables f, double y0, double x0, double xn, double h, double epsilon) {
         Method method = new RungeKuttaOfTheFourthOrder(f);
 
-        double currentH = h;
+        Table solutionWithH = method.table(y0, x0, xn, h);
+        Table solutionWithHalfH = method.table(y0, x0, xn, h / 2);
 
-        for (int i = 0; i < MAX_ITER; i++) {
-            Table solutionWithH = method.table(y0, x0, xn, currentH);
-            Table solutionWithHalfH = method.table(y0, x0, xn, currentH / 2);
+        List<Double> yHList = solutionWithH.getYRow();
+        List<Double> yHalfHList = solutionWithHalfH.getYRow();
 
-            List<Double> yHList = solutionWithH.getYRow();
-            List<Double> yHalfHList = solutionWithHalfH.getYRow();
+        double currentError = orderOfAccuracy.value(yHList, yHalfHList);
 
-            double currentError = orderOfAccuracy.value(yHList, yHalfHList);
+        List<Double> exactSolution = new ArrayList<>();
 
-            if (currentError <= epsilon) {
-                List<Double> exactSolution = new ArrayList<>();
+        for (int i = 0; i < solutionWithH.getXRow().size(); i++) {
+            double x = solutionWithH.getXRow().get(i);
 
-                for (int j = 0; j < solutionWithH.getXRow().size(); j++) {
-                    double x = solutionWithH.getXRow().get(j);
-
-                    exactSolution.add(exactSolutionFunction.value(x, x0, y0));
-                }
-
-                return new Solution("runge", f.toString(), y0, x0, xn, currentH, epsilon, exactSolution, solutionWithH, currentError, true);
-            }
-
-            currentH /= 2;
+            exactSolution.add(exactSolutionFunction.value(x, x0, y0));
         }
 
-        throw new IllegalArgumentException("Не удалось достичь заданной точности методом Рунге-Кутта 4 порядка.");
+        return new Solution("runge", f.toString(), y0, x0, xn, h, epsilon, exactSolution, solutionWithH, currentError, currentError <= epsilon);
     }
 }

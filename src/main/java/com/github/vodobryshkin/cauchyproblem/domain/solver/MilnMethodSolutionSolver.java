@@ -13,8 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MilnMethodSolutionSolver implements ODESolutionSolver {
-    private static final int MAX_ITER = 30;
-
     private final OrderOfAccuracy orderOfAccuracy = new ExactSolutionOrderOfAccuracy();
     private final ExactSolutionFunction exactSolutionFunction;
 
@@ -24,30 +22,20 @@ public class MilnMethodSolutionSolver implements ODESolutionSolver {
 
     @Override
     public Solution solution(FunctionOfTwoVariables f, double y0, double x0, double xn, double h, double epsilon) {
-        double currentH = h;
+        Method method = new MilnMethod(f, epsilon);
 
-        for (int i = 0; i < MAX_ITER; i++) {
-            Method method = new MilnMethod(f, epsilon);
+        Table solution = method.table(y0, x0, xn, h);
 
-            Table solution = method.table(y0, x0, xn, currentH);
+        List<Double> exactSolution = new ArrayList<>();
 
-            List<Double> exactSolution = new ArrayList<>();
+        for (int i = 0; i < solution.getXRow().size(); i++) {
+            double x = solution.getXRow().get(i);
 
-            for (int j = 0; j < solution.getXRow().size(); j++) {
-                double x = solution.getXRow().get(j);
-
-                exactSolution.add(exactSolutionFunction.value(x, x0, y0));
-            }
-
-            double currentError = orderOfAccuracy.value(solution.getYRow(), exactSolution);
-
-            if (currentError <= epsilon) {
-                return new Solution("miln", f.toString(), y0, x0, xn, currentH, epsilon, exactSolution, solution, currentError, true);
-            }
-
-            currentH /= 2;
+            exactSolution.add(exactSolutionFunction.value(x, x0, y0));
         }
 
-        throw new IllegalArgumentException("Не удалось достичь заданной точности методом Милна.");
+        double currentError = orderOfAccuracy.value(solution.getYRow(), exactSolution);
+
+        return new Solution("miln", f.toString(), y0, x0, xn, h, epsilon, exactSolution, solution, currentError, currentError <= epsilon);
     }
 }
