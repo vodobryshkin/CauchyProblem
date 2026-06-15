@@ -24,12 +24,12 @@ public class MathConfig {
     private static final FunctionOfTwoVariables SECOND = new FunctionOfTwoVariables() {
         @Override
         public double value(double x, double y) {
-            return 2 * x * (1 + y * y);
+            return 2 * x / (1 + y);
         }
 
         @Override
         public String toString() {
-            return "y' = 2x(1 + y^2)";
+            return "y' = 2x / (1 + y)";
         }
     };
 
@@ -61,7 +61,7 @@ public class MathConfig {
             Math.pow(x + 1, 2) + (y0 - Math.pow(x0 + 1, 2)) * Math.exp(x - x0);
 
     private static final ExactSolutionFunction SECOND_SOLUTION = (x, x0, y0) ->
-            Math.tan(x * x - x0 * x0 + Math.atan(y0));
+            -1 + Math.sqrt(Math.pow(1 + y0, 2) + 2 * (x * x - x0 * x0));
 
     private static final ExactSolutionFunction THIRD_SOLUTION = (x, x0, y0) ->
             (Math.sin(x) - Math.cos(x)) / 2.0 + (y0 - (Math.sin(x0) - Math.cos(x0)) / 2.0) * Math.exp(-(x - x0));

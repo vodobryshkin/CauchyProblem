@@ -4,7 +4,7 @@ export function exactValue(number, x, x0, y0) {
             return Math.pow(x + 1, 2) + (y0 - Math.pow(x0 + 1, 2)) * Math.exp(x - x0);
 
         case 2:
-            return Math.tan(x * x - x0 * x0 + Math.atan(y0));
+            return -1 + Math.sqrt(Math.pow(1 + y0, 2) + 2 * (x * x - x0 * x0));
 
         case 3:
             return (Math.sin(x) - Math.cos(x)) / 2.0

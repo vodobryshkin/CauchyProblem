@@ -35,23 +35,19 @@ public class ODERequest {
         return x0 < xn;
     }
 
-    @AssertTrue(message = "Для уравнения y' = 2x(1 + y^2) выбранный интервал пересекает точку разрыва решения.")
+    @AssertTrue(message = "Для данного уравнения решение на выбранном интервале доходит до y = -1.")
     public boolean isSecondEquationIntervalAllowed() {
         if (number != 2) {
             return true;
         }
 
+        if (y0 <= -1) {
+            return false;
+        }
+
         double minSquare = x0 <= 0 && xn >= 0 ? 0 : Math.min(x0 * x0, xn * xn);
-        double maxSquare = Math.max(x0 * x0, xn * xn);
+        double minRadicand = Math.pow(1 + y0, 2) + 2 * (minSquare - x0 * x0);
 
-        double shift = Math.atan(y0) - x0 * x0;
-
-        double minArgument = minSquare + shift - TAN_ASYMPTOTE;
-        double maxArgument = maxSquare + shift + TAN_ASYMPTOTE;
-
-        int firstAsymptoteIndex = (int) Math.ceil((minArgument - Math.PI / 2) / Math.PI);
-        int lastAsymptoteIndex = (int) Math.floor((maxArgument - Math.PI / 2) / Math.PI);
-
-        return firstAsymptoteIndex > lastAsymptoteIndex;
+        return minRadicand > 0;
     }
 }

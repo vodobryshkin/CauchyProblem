@@ -25,29 +25,27 @@ export function validateForm(form) {
   }
 
   if (Number.isFinite(h) && h <= 0) {
-    errors.push("Шаг h должен быть положительным.");
+    errors.push("Шаг должен быть положительным.");
   }
 
   if (Number.isFinite(epsilon) && epsilon <= 0) {
-    errors.push("Точность epsilon должна быть положительной.");
+    errors.push("Точность погрешности должна быть положительной.");
   }
 
   if (number === 2 && [y0, x0, xn].every(Number.isFinite) && !isSecondEquationIntervalAllowed(x0, xn, y0)) {
-    errors.push("Для уравнения y' = 2x(1 + y²) выбранный интервал пересекает точку разрыва решения.");
+    errors.push("Для данного уравнения решение на выбранном интервале доходит до y = -1.");
   }
 
   return errors;
 }
 
 function isSecondEquationIntervalAllowed(x0, xn, y0) {
-  const margin = 1e-6;
-  const minSquare = x0 <= 0 && xn >= 0 ? 0 : Math.min(x0 * x0, xn * xn);
-  const maxSquare = Math.max(x0 * x0, xn * xn);
-  const shift = Math.atan(y0) - x0 * x0;
-  const minArgument = minSquare + shift - margin;
-  const maxArgument = maxSquare + shift + margin;
-  const firstAsymptoteIndex = Math.ceil((minArgument - Math.PI / 2) / Math.PI);
-  const lastAsymptoteIndex = Math.floor((maxArgument - Math.PI / 2) / Math.PI);
+  if (y0 <= -1) {
+    return false;
+  }
 
-  return firstAsymptoteIndex > lastAsymptoteIndex;
+  const minSquare = x0 <= 0 && xn >= 0 ? 0 : Math.min(x0 * x0, xn * xn);
+  const minRadicand = Math.pow(1 + y0, 2) + 2 * (minSquare - x0 * x0);
+
+  return minRadicand > 0;
 }
