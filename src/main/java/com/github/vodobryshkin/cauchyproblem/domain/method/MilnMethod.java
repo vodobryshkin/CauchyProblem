@@ -16,6 +16,10 @@ public class MilnMethod implements Method {
 
     @Override
     public Table table(double y0, double x0, double xn, double h) {
+        if (h <= 0) {
+            throw new IllegalArgumentException("Шаг h должен быть положительным.");
+        }
+
         List<Double> xRow = new ArrayList<>();
 
         for (double x = x0; x <= xn + h / 2; x += h) {

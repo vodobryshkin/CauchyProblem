@@ -14,6 +14,10 @@ public class RungeKuttaOfTheFourthOrder implements Method {
 
     @Override
     public Table table(double y0, double x0, double xn, double h) {
+        if (h <= 0) {
+            throw new IllegalArgumentException("Шаг h должен быть положительным.");
+        }
+
         List<Double> xRow = new ArrayList<>();
         List<Double> yRow = new ArrayList<>();
 
