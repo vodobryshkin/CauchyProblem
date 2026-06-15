@@ -13,33 +13,41 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MilnMethodSolutionSolver implements ODESolutionSolver {
+    private static final int MAX_ITER = 30;
+
     private final OrderOfAccuracy orderOfAccuracy = new ExactSolutionOrderOfAccuracy();
     private final ExactSolutionFunction exactSolutionFunction;
 
     public MilnMethodSolutionSolver(ExactSolutionFunction exactSolutionFunction) {
-        if (exactSolutionFunction == null) {
-            throw new IllegalArgumentException("Функция точного решения не должна быть null.");
-        }
-
         this.exactSolutionFunction = exactSolutionFunction;
     }
 
     @Override
     public Solution solution(FunctionOfTwoVariables f, double y0, double x0, double xn, double h, double epsilon) {
-        Method method = new MilnMethod(f);
+        double currentH = h;
 
-        Table solution = method.table(y0, x0, xn, h);
+        for (int i = 0; i < MAX_ITER; i++) {
+            Method method = new MilnMethod(f, epsilon);
 
-        List<Double> exactSolution = new ArrayList<>();
+            Table solution = method.table(y0, x0, xn, currentH);
 
-        for (int i = 0; i < solution.getXRow().size(); i++) {
-            double x = solution.getXRow().get(i);
+            List<Double> exactSolution = new ArrayList<>();
 
-            exactSolution.add(exactSolutionFunction.value(x, x0, y0));
+            for (int j = 0; j < solution.getXRow().size(); j++) {
+                double x = solution.getXRow().get(j);
+
+                exactSolution.add(exactSolutionFunction.value(x, x0, y0));
+            }
+
+            double currentError = orderOfAccuracy.value(solution.getYRow(), exactSolution);
+
+            if (currentError <= epsilon) {
+                return new Solution("miln", f.toString(), y0, x0, xn, currentH, epsilon, exactSolution, solution, currentError, true);
+            }
+
+            currentH /= 2;
         }
 
-        double currentError = orderOfAccuracy.value(solution.getYRow(), exactSolution);
-
-        return new Solution("miln", f.toString(), y0, x0, xn, h, epsilon, solution, currentError, currentError <= epsilon);
+        throw new IllegalArgumentException("Не удалось достичь заданной точности методом Милна.");
     }
 }

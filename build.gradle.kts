@@ -23,12 +23,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    testImplementation(platform("org.junit:junit-bom:6.0.0"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.security:spring-security-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
-    testCompileOnly("org.projectlombok:lombok")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testAnnotationProcessor("org.projectlombok:lombok")
+    testImplementation("org.assertj:assertj-core:3.27.7")
+
 }
 
 tasks.withType<Test> {

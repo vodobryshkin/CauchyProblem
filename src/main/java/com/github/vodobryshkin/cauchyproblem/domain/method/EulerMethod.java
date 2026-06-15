@@ -26,7 +26,6 @@ public class EulerMethod implements Method {
         }
 
         if (Math.abs(xn - xRow.getLast()) > 1e-9) {
-            System.out.printf("%f %f\n", xn, xRow.getLast());
             throw new IllegalArgumentException("Введённые границы интервала не соотносятся с введённым h.");
         }
 

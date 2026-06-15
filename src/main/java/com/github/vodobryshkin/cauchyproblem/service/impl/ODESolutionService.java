@@ -31,8 +31,8 @@ public class ODESolutionService implements IODESolutionService {
         double epsilon = request.getEpsilon();
 
         ODESolutionSolver solver = switch (methodName) {
-            case "euler" -> new EulerMethodSolutionSolver();
-            case "runge" -> new RungeKuttaOfTheFourthOrderSolutionSolver();
+            case "euler" -> new EulerMethodSolutionSolver(exactSolutions.get(number));
+            case "runge" -> new RungeKuttaOfTheFourthOrderSolutionSolver(exactSolutions.get(number));
             case "miln" -> new MilnMethodSolutionSolver(exactSolutions.get(number));
             case null, default -> throw new IllegalArgumentException("Решение данным методом еще не реализовано.");
         };

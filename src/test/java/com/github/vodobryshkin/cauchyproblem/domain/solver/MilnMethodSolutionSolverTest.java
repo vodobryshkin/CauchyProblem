@@ -1,5 +1,6 @@
 package com.github.vodobryshkin.cauchyproblem.domain.solver;
 
+import com.github.vodobryshkin.cauchyproblem.domain.method.ExactSolutionFunction;
 import com.github.vodobryshkin.cauchyproblem.domain.method.FunctionOfTwoVariables;
 import com.github.vodobryshkin.cauchyproblem.dto.Solution;
 import org.junit.jupiter.api.Tag;
@@ -20,9 +21,9 @@ public class MilnMethodSolutionSolverTest {
     private static final FunctionOfTwoVariables SECOND = Double::sum;
     private static final FunctionOfTwoVariables THIRD = (x, y) -> y - x * x + 1;
 
-    private static final List<Double> FIRST_EXACT = List.of(1.0, 1.105171, 1.221403, 1.349859, 1.491825, 1.648721, 1.822119, 2.013753, 2.225541, 2.459603, 2.718282);
-    private static final List<Double> SECOND_EXACT = List.of(1.0, 1.110342, 1.242806, 1.399718, 1.583649, 1.797443, 2.044238, 2.327505, 2.651082, 3.019206, 3.436564);
-    private static final List<Double> THIRD_EXACT = List.of(0.5, 0.829299, 1.214088, 1.648941, 2.127230, 2.640859, 3.179942, 3.732400, 4.283484, 4.815176, 5.305472);
+    private static final ExactSolutionFunction FIRST_EXACT = (x, x0, y0) -> y0 * Math.exp(x - x0);
+    private static final ExactSolutionFunction SECOND_EXACT = (x, x0, y0) -> (y0 + x0 + 1) * Math.exp(x - x0) - x - 1;
+    private static final ExactSolutionFunction THIRD_EXACT = (x, x0, y0) -> Math.pow(x + 1, 2) + (y0 - Math.pow(x0 + 1, 2)) * Math.exp(x - x0);
 
     private static final List<Double> FIRST_EXPECTED = List.of(1.0, 1.105171, 1.221403, 1.349858, 1.491824, 1.648721, 1.822119, 2.013752, 2.225541, 2.459603, 2.718282);
     private static final List<Double> SECOND_EXPECTED = List.of(1.0, 1.110342, 1.242805, 1.399717, 1.583649, 1.797442, 2.044237, 2.327505, 2.651081, 3.019205, 3.436563);
@@ -30,17 +31,17 @@ public class MilnMethodSolutionSolverTest {
 
     static Stream<Arguments> correctArgumentsStream() {
         return Stream.of(
-                Arguments.of(FIRST, 1.0, 0.0, 1.0, 0.1, 1e-4, FIRST_EXACT, FIRST_EXPECTED),
-                Arguments.of(SECOND, 1.0, 0.0, 1.0, 0.1, 1e-4, SECOND_EXACT, SECOND_EXPECTED),
-                Arguments.of(THIRD, 0.5, 0.0, 2.0, 0.2, 1e-4, THIRD_EXACT, THIRD_EXPECTED)
+                Arguments.of(FIRST, FIRST_EXACT, 1.0, 0.0, 1.0, 0.1, 1.0, FIRST_EXPECTED),
+                Arguments.of(SECOND, SECOND_EXACT, 1.0, 0.0, 1.0, 0.1, 1.0, SECOND_EXPECTED),
+                Arguments.of(THIRD, THIRD_EXACT, 0.5, 0.0, 2.0, 0.2, 1.0, THIRD_EXPECTED)
         );
     }
 
     @Tag("unit")
     @ParameterizedTest
     @MethodSource("correctArgumentsStream")
-    void miln_solver_correctly_calculates_correct_parameters(FunctionOfTwoVariables f, double y0, double x0, double xn, double h, double epsilon, List<Double> exactSolution, List<Double> expected) {
-        ODESolutionSolver sut = new MilnMethodSolutionSolver(exactSolution);
+    void miln_solver_correctly_calculates_correct_parameters(FunctionOfTwoVariables f, ExactSolutionFunction exactSolutionFunction, double y0, double x0, double xn, double h, double epsilon, List<Double> expected) {
+        ODESolutionSolver sut = new MilnMethodSolutionSolver(exactSolutionFunction);
 
         Solution solution = sut.solution(f, y0, x0, xn, h, epsilon);
         List<Double> actual = solution.getTable().getYRow();

@@ -3,6 +3,8 @@ package com.github.vodobryshkin.cauchyproblem.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
+import java.util.List;
+
 @Value
 public class Solution {
     String method;
@@ -13,9 +15,11 @@ public class Solution {
     double h;
     double epsilon;
 
+    @JsonProperty("exact_solution")
+    List<Double> exactSolution;
     Table table;
-    @JsonProperty("order_of_accuracy")
-    double orderOfAccuracy;
+    @JsonProperty("error_estimate")
+    double errorEstimate;
 
     @JsonProperty("accuracy_reached")
     boolean accuracyReached;

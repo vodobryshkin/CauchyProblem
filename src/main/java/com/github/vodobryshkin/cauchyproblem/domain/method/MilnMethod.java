@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MilnMethod implements Method {
+    private static final int MAX_ITER = 30;
+
     private final FunctionOfTwoVariables f;
     private final Method prePredictMethod;
+    private final double correctionEpsilon;
 
-    public MilnMethod(FunctionOfTwoVariables f) {
+    public MilnMethod(FunctionOfTwoVariables f, double correctionEpsilon) {
         this.f = f;
-        prePredictMethod = new RungeKuttaOfTheFourthOrder(f);
+        this.prePredictMethod = new RungeKuttaOfTheFourthOrder(f);
+        this.correctionEpsilon = correctionEpsilon;
     }
 
     @Override
@@ -46,10 +50,22 @@ public class MilnMethod implements Method {
             double fPrev1 = f.value(xRow.get(i - 1), yRow.get(i - 1));
             double fIn = f.value(xRow.get(i), yRow.get(i));
 
-            double predictY = yPrev3 + 4 * h / 3 * (2 * fPrev2 - fPrev1 + 2 * fIn);
-            double predictDerivative = f.value(xNext, predictY);
+            double previousY = yPrev3 + 4 * h / 3 * (2 * fPrev2 - fPrev1 + 2 * fIn);
+            double currentY = yPrev1 + h / 3 * (fPrev1 + 4 * fIn + f.value(xNext, previousY));
 
-            yRow.add(yPrev1 + h / 3 * (fPrev1 + 4 * fIn + predictDerivative));
+            int iter = 0;
+
+            while (Math.abs(currentY - previousY) > correctionEpsilon) {
+                if (iter >= MAX_ITER) {
+                    throw new IllegalArgumentException("Метод Милна не смог выполнить коррекцию за допустимое количество итераций.");
+                }
+
+                previousY = currentY;
+                currentY = yPrev1 + h / 3 * (fPrev1 + 4 * fIn + f.value(xNext, previousY));
+                iter++;
+            }
+
+            yRow.add(currentY);
         }
 
         return new Table(xRow, yRow);
