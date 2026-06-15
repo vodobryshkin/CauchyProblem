@@ -17,11 +17,12 @@ public class EulerMethod implements Method {
         List<Double> xRow = new ArrayList<>();
         List<Double> yRow = new ArrayList<>();
 
-        for (double x = x0; x <= xn; x += h) {
+        for (double x = x0; x <= xn + h / 2; x += h) {
             xRow.add(x);
         }
 
         if (Math.abs(xn - xRow.getLast()) > 1e-9) {
+            System.out.printf("%f %f\n", xn, xRow.getLast());
             throw new IllegalArgumentException("Введённые границы интервала не соотносятся с введённым h.");
         }
 
