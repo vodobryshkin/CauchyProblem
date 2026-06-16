@@ -1,6 +1,21 @@
 export function validateForm(form) {
   const errors = [];
 
+  const requiredFields = [
+    form.number,
+    form.method,
+    form.y0,
+    form.x0,
+    form.xn,
+    form.h,
+    form.epsilon
+  ];
+
+  if (requiredFields.some(value => value === "" || value === null || value === undefined)) {
+    errors.push("Заполните все поля.");
+    return errors;
+  }
+
   const number = Number(form.number);
   const y0 = Number(form.y0);
   const x0 = Number(form.x0);
